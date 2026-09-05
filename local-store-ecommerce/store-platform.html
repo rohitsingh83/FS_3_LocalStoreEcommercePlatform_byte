@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GreenLeaf Artisan Market — Local Storefront</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfbf9; }
+    h1, h2, h3, .font-serif-display { font-family: 'Playfair Display', serif; }
+    .glass-nav { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); }
+  </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col antialiased selection:bg-emerald-200">
+
+  <!-- Top Delivery Banner -->
+  <div class="bg-emerald-950 text-emerald-100 text-[11px] font-medium py-1.5 px-4 text-center flex items-center justify-center gap-2">
+    <span>✨ Farm-to-Door Local Delivery · Free on orders over $35</span>
+    <span class="text-emerald-500">|</span>
+    <span>📍 Valley Springs & Neighboring Towns</span>
+  </div>
+
+  <!-- Sticky Navbar -->
+  <header class="sticky top-0 z-40 glass-nav border-b border-stone-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="filterCategory('all')">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-700 to-emerald-500 flex items-center justify-center text-white text-xl shadow-md">
+          🌿
+        </div>
+        <div>
+          <span class="font-serif-display text-2xl font-bold text-slate-900 block leading-none">GreenLeaf</span>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-700">Artisan Market</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="toggleCart()" class="flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 text-emerald-900 px-4 py-2 rounded-full font-bold text-xs shadow-sm transition">
+          <span>🛒 Basket</span>
+          <span id="nav-cart-badge" class="bg-emerald-600 text-white text-[11px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+          <span id="nav-cart-subtotal" class="hidden sm:inline pl-1 border-l border-emerald-200 text-emerald-800">$0.00</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Welcome -->
+  <section class="bg-gradient-to-b from-emerald-100/40 via-emerald-50/20 to-transparent py-10 px-4 text-center border-b border-stone-200/50">
+    <div class="max-w-2xl mx-auto space-y-2">
+      <span class="inline-block bg-white text-emerald-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm border border-emerald-200/70">
+        🌱 Fresh Local Harvest
+      </span>
+      <h1 class="font-serif-display text-3xl sm:text-4xl font-extrabold text-slate-900">
+        Farm-Fresh Local Groceries
+      </h1>
+      <p class="text-stone-600 text-xs sm:text-sm max-w-lg mx-auto">
+        Supporting independent regional family farms and small-batch food crafters.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 space-y-6">
+    <!-- Category Pills -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-bar">
+      <!-- Injected via JS -->
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="relative w-full sm:w-80">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400">🔍</span>
+        <input
+          id="search-input"
+          type="text"
+          oninput="handleSearch(this.value)"
+          placeholder="Search produce, bakery, honey..."
+          class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 outline-none focus:border-emerald-500 focus:bg-white transition"
+        />
+      </div>
+
+      <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 text-xs font-semibold text-stone-700">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" id="instock-checkbox" onchange="toggleInStock(this.checked)" class="rounded text-emerald-600" />
+          <span>In Stock Only</span>
+        </label>
+
+        <select id="sort-select" onchange="handleSort(this.value)" class="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 outline-none">
+          <option value="default">Featured & Newest</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+          <option value="name_asc">Alphabetical (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Injected via JS -->
+    </div>
+  </main>
+
+  <!-- Product Detail Modal -->
+  <div id="detail-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 relative">
+      <button onclick="closeDetailModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-2 rounded-full hover:bg-stone-100 text-lg">✕</button>
+      <div id="modal-content">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden" onclick="toggleCart()"></div>
+  <div id="cart-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-5 border-b border-stone-100 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🛒</span>
+        <h2 class="font-serif-display text-lg font-bold text-slate-900">Your Basket</h2>
+        <span id="cart-drawer-count" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+      </div>
+      <button onclick="toggleCart()" class="p-2 text-stone-400 hover:text-stone-700 rounded-full">✕</button>
+    </div>
+
+    <!-- Free delivery progress -->
+    <div class="bg-emerald-50/80 px-5 py-3 border-b border-emerald-100 text-xs font-semibold text-emerald-900">
+      <div class="flex justify-between mb-1">
+        <span id="delivery-progress-text">Add $35.00 for Free Local Delivery</span>
+        <span id="delivery-progress-pct">0%</span>
+      </div>
+      <div class="w-full bg-emerald-200/60 h-2 rounded-full overflow-hidden">
+        <div id="delivery-progress-bar" class="bg-emerald-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div id="cart-items-container" class="flex-1 overflow-y-auto p-5 space-y-4 divide-y divide-stone-100">
+      <!-- Injected via JS -->
+    </div>
+
+    <div id="cart-footer" class="p-5 border-t border-stone-100 bg-stone-50/50 space-y-3 hidden">
+      <div class="space-y-1.5 text-xs text-stone-600">
+        <div class="flex justify-between"><span>Subtotal</span><span id="cart-subtotal" class="font-semibold text-slate-900">$0.00</span></div>
+        <div class="flex justify-between"><span>Delivery</span><span id="cart-delivery">$4.99</span></div>
+        <div class="flex justify-between"><span>Estimated Tax (8%)</span><span id="cart-tax">$0.00</span></div>
+        <div class="flex justify-between text-sm font-extrabold text-slate-900 pt-2 border-t border-stone-200">
+          <span>Estimated Total</span><span id="cart-total">$0.00</span>
+        </div>
+      </div>
+      <button onclick="handleCheckout()" class="w-full bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white py-3.5 rounded-xl font-bold text-xs shadow-md transition">
+        Place Local Delivery Order
+      </button>
+      <div class="flex justify-between text-[11px] text-stone-400">
+        <span>Hand-packed with care</span>
+        <button onclick="clearCart()" class="text-stone-400 hover:text-rose-600 underline">Clear basket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2">
+    <span id="toast-icon">🌿</span>
+    <span id="toast-message">Message</span>
+  </div>
+
+  <script>
+    const PRODUCTS = [
+      {
+        id: "prod_1",
+        title: "Organic Heirloom Tomatoes",
+        category: "produce",
+        price: 4.99,
+        description: "Vine-ripened heritage tomatoes grown pesticide-free in mineral-rich soil. Bursting with sweet, rich flavor.",
+        origin: "Valley Crest Family Farms",
+        unit: "1 lb bag",
+        stock: 25,
+        imageUrl: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80",
+        badge: "Fresh Harvest",
+        isOrganic: true
+      },
+      {
+        id: "prod_2",
+        title: "Artisan Country Sourdough Loaf",
+        category: "bakery",
+        price: 6.50,
+        description: "Naturally leavened over 36 hours with an 8-year sourdough mother. Blistered caramelized crust with airy crumb.",
+        origin: "Wild Yeast Hearth Breads",
+        unit: "650g boule",
+        stock: 8,
+        imageUrl: "https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=800&q=80",
+        badge: "Daily Bake",
+        isOrganic: true
+      },
+      {
+        id: "prod_3",
+        title: "Grass-Fed Whole Milk",
+        category: "dairy",
+        price: 4.89,
+        description: "Non-homogenized vat-pasteurized cream-top milk from 100% pasture-raised Jersey cows.",
+        origin: "Meadowview Dairy Collective",
+        unit: "Half Gallon",
+        stock: 18,
+        imageUrl: "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=800&q=80",
+        badge: "Non-GMO",
+        isOrganic: true
+      },
+      {
+        id: "prod_4",
+        title: "Raw Mountain Wildflower Honey",
+        category: "pantry",
+        price: 11.99,
+        description: "Pure, unpasteurized honey harvested from high-elevation wildflower meadows.",
+        origin: "Highland Apiaries",
+        unit: "16 oz glass jar",
+        stock: 14,
+        imageUrl: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80",
+        badge: "Staff Pick",
+        isOrganic: true
+      },
+      {
+        id: "prod_5",
+        title: "Crisp Honeycrisp Apples",
+        category: "produce",
+        price: 3.49,
+        description: "Hand-picked crisp apples with a signature honey-sweet flavor and balanced acidity.",
+        origin: "Oakridge Family Orchards",
+        unit: "Per lb",
+        stock: 40,
+        imageUrl: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=800&q=80",
+        badge: "",
+        isOrganic: true
+      },
+      {
+        id: "prod_6",
+        title: "Cold-Pressed Extra Virgin Olive Oil",
+        category: "pantry",
+        price: 18.50,
+        description: "First cold-extraction of estate-grown Mission and Arbequina olives. Vibrant peppery finish.",
+        origin: "Canyon Creek Groves",
+        unit: "750 ml",
+        stock: 9,
+        imageUrl: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=800&q=80",
+        badge: "Award Winner",
+        isOrganic: true
+      },
+      {
+        id: "prod_7",
+        title: "Aged Farmhouse White Cheddar",
+        category: "dairy",
+        price: 8.50,
+        description: "Cave-aged for 18 months in small wooden rinds. Dense, crumbly texture with crunchy tyrosine crystals.",
+        origin: "Pine Ridge Creamery",
+        unit: "8 oz block",
+        stock: 4, // Low stock
+        imageUrl: "https://images.unsplash.com/photo-1618164436241-4473940d1f5c?auto=format&fit=crop&w=800&q=80",
+        badge: "Only 4 Left",
+        isOrganic: false
+      },
+      {
+        id: "prod_8",
+        title: "Flaky French Butter Croissants",
+        category: "bakery",
+        price: 7.99,
+        description: "Classic Viennoiserie laminated with 84% butterfat European cultured butter.",
+        origin: "Artisan Bakehouse",
+        unit: "Pack of 4",
+        stock: 12,
+        imageUrl: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80",
+        badge: "Fresh Daily",
+        isOrganic: false
+      },
+      {
+        id: "prod_9",
+        title: "Organic Baby Tuscan Kale",
+        category: "produce",
+        price: 2.99,
+        description: "Tender dark-green Lacinato dinosaur kale leaves harvested young for sweet flavor.",
+        origin: "Green River Organics",
+        unit: "1 Bunch",
+        stock: 15,
+        imageUrl: "https://images.unsplash.com/photo-1524179091875-bf99a9a6fa57?auto=format&fit=crop&w=800&q=80",
+        badge: "",
+        isOrganic: true
+      },
+      {
+        id: "prod_10",
+        title: "Nitro Cold Brew Coffee",
+        category: "beverages",
+        price: 4.50,
+        description: "Slow-steeped for 20 hours using washed Ethiopian Yirgacheffe beans.",
+        origin: "Peak Artisan Roasters",
+        unit: "12 fl oz can",
+        stock: 20,
+        imageUrl: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=800&q=80",
+        badge: "Popular",
+        isOrganic: true
+      },
+      {
+        id: "prod_11",
+        title: "Small-Batch Spiced Apple Cider",
+        category: "beverages",
+        price: 6.99,
+        description: "Unfiltered cider pressed from 5 heritage apple varieties with Ceylon cinnamon and allspice.",
+        origin: "Misty Hollow Orchards",
+        unit: "750 ml",
+        stock: 10,
+        imageUrl: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&w=800&q=80",
+        badge: "Seasonal",
+        isOrganic: true
+      },
+      {
+        id: "prod_12",
+        title: "Seeded Multigrain Sourdough Batard",
+        category: "bakery",
+        price: 6.25,
+        description: "Nutty, hearty loaf packed with pumpkin seeds, flax, and chia in a slow-fermented base.",
+        origin: "Wild Yeast Hearth Breads",
+        unit: "500g batard",
+        stock: 0, // OUT OF STOCK
+        imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",
+        badge: "Sold Out Today",
+        isOrganic: true
+      }
+    ];
+
+    let currentCategory = 'all';
+    let searchQuery = '';
+    let inStockOnly = false;
+    let sortBy = 'default';
+    let cart = JSON.parse(localStorage.getItem('greenleaf_cart') || '[]');
+
+    const CATEGORIES = [
+      { id: 'all', label: 'All Aisles', icon: '🧺' },
+      { id: 'produce', label: 'Fresh Produce', icon: '🥬' },
+      { id: 'bakery', label: 'Artisan Bakery', icon: '🥖' },
+      { id: 'dairy', label: 'Dairy & Eggs', icon: '🥛' },
+      { id: 'pantry', label: 'Pantry & Honey', icon: '🍯' },
+      { id: 'beverages', label: 'Cold Brew & Cider', icon: '☕' },
+    ];
+
+    function showToast(msg, icon = '🌿') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').innerText = msg;
+      document.getElementById('toast-icon').innerText = icon;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    function renderCategories() {
+      const bar = document.getElementById('category-bar');
+      bar.innerHTML = CATEGORIES.map(cat => `
+        <button onclick="filterCategory('${cat.id}')" class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold shrink-0 transition ${
+          currentCategory === cat.id ? 'bg-emerald-700 text-white shadow' : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-100'
+        }">
+          <span>${cat.icon}</span>
+          <span>${cat.label}</span>
+        </button>
+      `).join('');
+    }
+
+    function getStockBadge(stock) {
+      if (stock <= 0) {
+        return `<span class="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full text-[11px] font-bold">✕ Out of Stock</span>`;
+      }
+      if (stock <= 5) {
+        return `<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full text-[11px] font-bold animate-pulse">⚠️ Only ${stock} Left!</span>`;
+      }
+      return `<span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px] font-bold">✓ In Stock (${stock})</span>`;
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      let filtered = PRODUCTS.filter(p => {
+        if (currentCategory !== 'all' && p.category !== currentCategory) return false;
+        if (inStockOnly && p.stock <= 0) return false;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          return p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.origin.toLowerCase().includes(q);
+        }
+        return true;
+      });
+
+      if (sortBy === 'price_asc') filtered.sort((a, b) => a.price - b.price);
+      else if (sortBy === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+      else if (sortBy === 'name_asc') filtered.sort((a, b) => a.title.localeCompare(b.title));
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-20 bg-white rounded-3xl border border-stone-200 p-8 space-y-3">
+            <div class="text-4xl">🍃</div>
+            <h3 class="font-serif-display text-lg font-bold text-slate-800">No matching products found</h3>
+            <p class="text-xs text-stone-500">Try adjusting your filters or search keywords.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => {
+        const isSoldOut = p.stock <= 0;
+        return `
+          <div class="bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col overflow-hidden">
+            <div class="relative aspect-[4/3] overflow-hidden bg-stone-100 cursor-pointer" onclick="openDetailModal('${p.id}')">
+              <img src="${p.imageUrl}" alt="${p.title}" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+              <div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
+                ${p.badge ? `<span class="bg-slate-900/90 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">${p.badge}</span>` : ''}
+                ${p.isOrganic ? `<span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Organic</span>` : ''}
+              </div>
+              <div class="absolute bottom-3 left-3">
+                ${getStockBadge(p.stock)}
+              </div>
+            </div>
+
+            <div class="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between text-[11px] text-stone-500 uppercase tracking-wider font-semibold mb-1">
+                  <span>${p.category}</span>
+                  <span>${p.unit}</span>
+                </div>
+                <h3 onclick="openDetailModal('${p.id}')" class="font-serif-display text-base font-bold text-slate-900 hover:text-emerald-700 cursor-pointer line-clamp-1 mb-1">
+                  ${p.title}
+                </h3>
+                <p class="text-[11px] text-stone-500 italic mb-2">From ${p.origin}</p>
+                <p class="text-xs text-stone-600 line-clamp-2 leading-relaxed mb-4">${p.description}</p>
+              </div>
+
+              <div class="pt-3 border-t border-stone-100 flex items-center justify-between gap-3">
+                <span class="text-lg font-extrabold text-slate-900">$${p.price.toFixed(2)}</span>
+                <button
+                  onclick="addToCart('${p.id}', 1)"
+                  ${isSoldOut ? 'disabled' : ''}
+                  class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    isSoldOut
+                      ? 'bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200'
+                      : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm active:scale-95'
+                  }"
+                >
+                  ${isSoldOut ? 'Sold Out' : '+ Add'}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterCategory(catId) {
+      currentCategory = catId;
+      renderCategories();
+      renderProducts();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.trim();
+      renderProducts();
+    }
+
+    function toggleInStock(checked) {
+      inStockOnly = checked;
+      renderProducts();
+    }
+
+    function handleSort(val) {
+      sortBy = val;
+      renderProducts();
+    }
+
+    function saveCart() {
+      localStorage.setItem('greenleaf_cart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function addToCart(productId, qty = 1) {
+      const product = PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      if (product.stock <= 0) {
+        showToast(`"${product.title}" is out of stock!`, '⚠️');
+        return;
+      }
+
+      const existingIndex = cart.findIndex(i => i.productId === productId);
+      const currentInCart = existingIndex > -1 ? cart[existingIndex].quantity : 0;
+
+      if (currentInCart + qty > product.stock) {
+        showToast(`Only ${product.stock} available. You have ${currentInCart} in cart.`, '⚠️');
+        return;
+      }
+
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += qty;
+      } else {
+        cart.push({ productId, quantity: qty, price: product.price });
+      }
+
+      saveCart();
+      showToast(`Added ${qty} × "${product.title}" to basket! 🛒`, '🌿');
+    }
+
+    function updateCartQty(productId, newQty) {
+      const product = PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      if (newQty > product.stock) {
+        showToast(`Only ${product.stock} available in stock!`, '⚠️');
+        return;
+      }
+
+      const index = cart.findIndex(i => i.productId === productId);
+      if (index === -1) return;
+
+      if (newQty <= 0) {
+        cart.splice(index, 1);
+        showToast(`Removed from basket`, '🗑️');
+      } else {
+        cart[index].quantity = newQty;
+      }
+      saveCart();
+    }
+
+    function clearCart() {
+      cart = [];
+      saveCart();
+      showToast('Basket cleared', '🗑️');
+    }
+
+    function toggleCart() {
+      const overlay = document.getElementById('cart-drawer-overlay');
+      const drawer = document.getElementById('cart-drawer');
+      const isHidden = overlay.classList.contains('hidden');
+
+      if (isHidden) {
+        overlay.classList.remove('hidden');
+        drawer.classList.remove('translate-x-full');
+      } else {
+        overlay.classList.add('hidden');
+        drawer.classList.add('translate-x-full');
+      }
+    }
+
+    function updateCartUI() {
+      const totalItems = cart.reduce((acc, i) => acc + i.quantity, 0);
+      const subtotal = cart.reduce((acc, i) => acc + (i.quantity * i.price), 0);
+
+      document.getElementById('nav-cart-badge').innerText = totalItems;
+      document.getElementById('nav-cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('cart-drawer-count').innerText = totalItems;
+
+      const threshold = 35;
+      const isFree = subtotal >= threshold;
+      const pct = Math.min(100, Math.round((subtotal / threshold) * 100));
+      document.getElementById('delivery-progress-bar').style.width = `${pct}%`;
+      document.getElementById('delivery-progress-pct').innerText = `${pct}%`;
+
+      if (isFree) {
+        document.getElementById('delivery-progress-text').innerText = '🎉 Unlocked Free Local Delivery!';
+      } else {
+        document.getElementById('delivery-progress-text').innerText = `Add $${(threshold - subtotal).toFixed(2)} for Free Local Delivery`;
+      }
+
+      const container = document.getElementById('cart-items-container');
+      const footer = document.getElementById('cart-footer');
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-20 px-4 space-y-3">
+            <div class="text-3xl">🛒</div>
+            <h4 class="font-serif-display text-base font-bold text-slate-800">Your basket is empty</h4>
+            <p class="text-xs text-stone-500">Pick from fresh local produce and artisan breads.</p>
+          </div>
+        `;
+        footer.classList.add('hidden');
+        return;
+      }
+
+      footer.classList.remove('hidden');
+      container.innerHTML = cart.map(item => {
+        const product = PRODUCTS.find(p => p.id === item.productId);
+        if (!product) return '';
+        const lineTotal = (item.quantity * item.price).toFixed(2);
+        return `
+          <div class="flex items-center gap-3 pt-3 first:pt-0">
+            <img src="${product.imageUrl}" class="w-14 h-14 rounded-xl object-cover bg-stone-100 border border-stone-200 shrink-0" />
+            <div class="flex-1 min-w-0">
+              <h5 class="text-xs font-bold text-slate-900 truncate">${product.title}</h5>
+              <p class="text-[11px] text-stone-500">$${item.price.toFixed(2)} / ${product.unit}</p>
+              <div class="flex items-center gap-2 mt-1.5">
+                <div class="flex items-center border border-stone-200 rounded-lg bg-stone-50 text-xs font-bold">
+                  <button onclick="updateCartQty('${product.id}', ${item.quantity - 1})" class="px-2 py-0.5 hover:bg-stone-200">-</button>
+                  <span class="px-2">${item.quantity}</span>
+                  <button onclick="updateCartQty('${product.id}', ${item.quantity + 1})" class="px-2 py-0.5 hover:bg-stone-200">+</button>
+                </div>
+                <button onclick="updateCartQty('${product.id}', 0)" class="text-stone-400 hover:text-red-500 text-xs">🗑️</button>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-extrabold text-slate-900">$${lineTotal}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const deliveryFee = isFree ? 0 : 4.99;
+      const tax = subtotal * 0.08;
+      const total = subtotal + deliveryFee + tax;
+
+      document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('cart-delivery').innerText = isFree ? 'FREE' : `$${deliveryFee.toFixed(2)}`;
+      document.getElementById('cart-tax').innerText = `$${tax.toFixed(2)}`;
+      document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+    }
+
+    function handleCheckout() {
+      clearCart();
+      toggleCart();
+      showToast('Order confirmed! We are packing your basket.', '🎉');
+    }
+
+    function openDetailModal(productId) {
+      const p = PRODUCTS.find(prod => prod.id === productId);
+      if (!p) return;
+
+      const modal = document.getElementById('detail-modal');
+      const content = document.getElementById('modal-content');
+      const isSoldOut = p.stock <= 0;
+
+      content.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 relative">
+            <img src="${p.imageUrl}" class="w-full h-full object-cover" />
+            <div class="absolute bottom-3 left-3">${getStockBadge(p.stock)}</div>
+          </div>
+          <div class="space-y-3 flex flex-col justify-between">
+            <div class="space-y-2">
+              <span class="text-[10px] uppercase font-bold text-stone-500 tracking-wider">${p.category}</span>
+              <h3 class="font-serif-display text-2xl font-bold text-slate-900">${p.title}</h3>
+              <p class="text-xs text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 inline-block">
+                📍 Grown at ${p.origin}
+              </p>
+              <div class="flex items-baseline gap-2 pt-1">
+                <span class="text-2xl font-extrabold text-slate-900">$${p.price.toFixed(2)}</span>
+                <span class="text-xs text-stone-500">/ ${p.unit}</span>
+              </div>
+              <p class="text-xs text-stone-600 leading-relaxed">${p.description}</p>
+            </div>
+
+            <div class="pt-4 border-t border-stone-100">
+              <button
+                onclick="addToCart('${p.id}', 1); closeDetailModal();"
+                ${isSoldOut ? 'disabled' : ''}
+                class="w-full py-3 rounded-xl text-xs font-bold transition ${
+                  isSoldOut
+                    ? 'bg-stone-100 text-stone-400 cursor-not-allowed'
+                    : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow'
+                }"
+              >
+                ${isSoldOut ? 'Currently Out of Stock' : 'Add to Basket · $' + p.price.toFixed(2)}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detail-modal').classList.add('hidden');
+    }
+
+    renderCategories();
+    renderProducts();
+    updateCartUI();
+  </script>
+</body>
+</html>

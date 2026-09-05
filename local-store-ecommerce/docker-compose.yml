@@ -1,0 +1,30 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: greenleaf-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: local_store_db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: greenleaf-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGO_URI: mongodb://mongodb:27017/local_store_db
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:5000
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:
